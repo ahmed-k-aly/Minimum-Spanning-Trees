@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
-
-
+#include <string.h>
+#include <assert.h>
 
 
 /**
@@ -22,7 +22,7 @@
  */
 typedef struct Vertex{
     int id; // the id of the vertex
-    Vertex** neighbors; // array of pointers of neighbors of the vertex
+    struct Vertex** neighbors; // array of pointers of neighbors of the vertex
     int numNeighbors; // number of neighbors of the vertex
 
 } Vertex;
@@ -77,8 +77,8 @@ typedef struct MinHeap{
  * @param numEdges 
  * @return int 
  */
-int readGraphComponents(Graph* graph, int numVertices, int numEdges){
-    while (numVertices > numVertices){ // while there are still vertices to be read 
+void readGraphComponents(Graph* graph, int numVertices, int numEdges){
+    while (numEdges > graph->numEdges){ // while there are still edges to be read
         // read the two vertices and the weight of the edge 
         int u, v, weight;
         int result = scanf("%c %c %d\n", &u, &v, &weight); // read the two vertices and the weight of the edge
@@ -119,10 +119,9 @@ int readGraphComponents(Graph* graph, int numVertices, int numEdges){
         }
         // check that the edge isn't already in the graph
         for (int i = 0; i < graph->numEdges; i++){
-            if (graph->edges[i]->u == vertex1 && graph->edges[i]->v == vertex2){
+            if ((graph->edges[i]->u == vertex1 && graph->edges[i]->v == vertex2) || (graph->edges[i]->u == vertex2 && graph->edges[i]->v == vertex1)){
                 // print error message
                 fprintf(stderr, "Error: Edge (%c, %c) already exists in the graph. Exiting...", vertex1->id, vertex2->id);
-                printf("Redundant Edge from %c to %c", vertex1, vertex2);
                 exit(EXIT_FAILURE);
             }
         }
@@ -139,21 +138,61 @@ int readGraphComponents(Graph* graph, int numVertices, int numEdges){
         vertex1->numNeighbors++;
         vertex2->neighbors[vertex2->numNeighbors] = vertex1;
         vertex2->numNeighbors++;
+    }
+    assert(graph->numVertices == numVertices);
+    assert(graph->numEdges == numEdges);
+}
 
+/**
+ * @brief reads a graph from stdin and returns a pointer to the graph
+ * 
+ * @return Graph* a pointer to the graph
+ */
+Graph* readGraph(){
+    int numVertices, numEdges;
+    int result = scanf("%d %d\n", &numVertices, &numEdges);// read the number of vertices and edges
+    if (result == EOF){
+        // if EOF is found, exit w error
+        fprintf(stderr, "Error: EOF found before the number of vertices and edges were read from file. Exiting..."); 
+        exit(EXIT_FAILURE);
+    } else if (result != 2){
+        // if the number of items read is not 2, exit w error
+        fprintf(stderr, "Error: Invalid input format. Exiting..."); 
+        exit(EXIT_FAILURE);
+    }
+    // read graph edge by edge (the graph is connected and undirected)
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->vertices = (Vertex**)malloc(sizeof(Vertex*) * numVertices);
+    graph->edges = (Edge**)malloc(sizeof(Edge*) * numEdges);
+    graph->numVertices = 0;
+    graph->numEdges = 0;
 
+    readGraphComponents(graph, numVertices, numEdges);
+    return graph;
+}
+
+/**
+ * @brief prints the graph
+ * 
+ * @param graph 
+ */
+void printGraph(Graph* graph){
+    printf("Graph:\n");
+    for (int i = 0; i < graph->numVertices; i++){
+        printf("Vertex %c:\n", graph->vertices[i]->id);
+        printf("Neighbors: ");
+        for (int j = 0; j < graph->vertices[i]->numNeighbors; j++){
+            printf("%c ", graph->vertices[i]->neighbors[j]->id);
+        }
+        printf("\n");
+    }
+    for (int i = 0; i < graph->numEdges; i++){
+        printf("Edge (%c, %c): %d\n", graph->edges[i]->u->id, graph->edges[i]->v->id, graph->edges[i]->weight);
     }
 }
 
-
-Graph* readGraph(char* filename){
-    FILE* fp = fopen(filename, "r");
-    if(fp == NULL){
-        printf("Error opening file %s", filename);
-        exit(1);
-    } 
-    int numVertices, numEdges;
-    fscanf(fp, "%d %d\n", &numVertices, &numEdges);// read the number of vertices and edges
-    // read graph edge by edge (the graph is connected and undirected)
-    Graph* graph = (Graph*)malloc(sizeof(Graph));
-    readGraphComponents(graph, numVertices, numEdges);
-
+int main(int argc, char** argv){
+    Graph* graph = readGraph();
+    printGraph(graph);
+    return 0;
+}
