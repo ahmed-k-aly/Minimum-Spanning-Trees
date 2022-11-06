@@ -55,13 +55,18 @@ void readGraphComponents(Graph* graph, int numVertices, int numEdges){
             vertex1 = (Vertex*)malloc(sizeof(Vertex));
             vertex1->id = u; // set the id of the vertex
             vertex1->neighbors = (Vertex**)malloc(sizeof(Vertex*) * numVertices); // the maximum number of neighbors is the number of vertices in the graph
+            vertex1->numNeighbors = 0; // the number of neighbors is 0
+            vertex1->edges = (Edge**)malloc(sizeof(Edge*) * numVertices); // the maximum number of edges is the number of vertices in the graph
             graph->vertices[graph->numVertices] = vertex1; // add the vertex to the graph
             graph->numVertices++; // increment the number of vertices in the graph
+            
         }
         if (vertex2 == NULL){
             vertex2 = (Vertex*)malloc(sizeof(Vertex));
             vertex2->id = v; // set the id of the vertex
             vertex2->neighbors = (Vertex**)malloc(sizeof(Vertex*) * numVertices); // the maximum number of neighbors is the number of vertices in the graph
+            vertex2->edges = (Edge**)malloc(sizeof(Edge*) * numVertices); // the maximum number of edges is the number of vertices in the graph
+            vertex2->numNeighbors = 0; // the number of neighbors is 0
             graph->vertices[graph->numVertices] = vertex2; // add the vertex to the graph
             graph->numVertices++; // increment the number of vertices in the graph
         }
@@ -83,8 +88,10 @@ void readGraphComponents(Graph* graph, int numVertices, int numEdges){
 
         // add the edge to the neighbors of the vertices
         vertex1->neighbors[vertex1->numNeighbors] = vertex2;
+        vertex1->edges[vertex1->numNeighbors] = edge; // add the edge to the vertex
         vertex1->numNeighbors++;
         vertex2->neighbors[vertex2->numNeighbors] = vertex1;
+        vertex2->edges[vertex2->numNeighbors] = edge; // add the edge to the neighbors of the vertices
         vertex2->numNeighbors++;
     }
     assert(graph->numVertices == numVertices);

@@ -33,6 +33,8 @@ typedef struct Vertex{
     int id; // the id of the vertex
     struct Vertex** neighbors; // array of pointers of neighbors of the vertex
     int numNeighbors; // number of neighbors of the vertex
+    bool visited;
+    struct Edge** edges; // array of pointers of edges of the vertex
 
 } Vertex;
 
