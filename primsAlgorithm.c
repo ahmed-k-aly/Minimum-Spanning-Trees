@@ -7,10 +7,9 @@
  * 
  */
 typedef struct TreeNode {
-    Vertex* parent;
-    Vertex* child;
+    Vertex* self; // the vertex of the node
+    struct TreeNode* child; // the child of the node
     Edge* edge;
-    int weight;
 } TreeNode;
 
 /**
@@ -52,40 +51,51 @@ MST primsAlgorithm(Graph* graph){
     MST* mst = (MST*)malloc(sizeof(MST));
     // choose a random vertex to start with
     Vertex* curr = graph->vertices[ rand() %graph->numVertices];
+    TreeNode* root = (TreeNode*)malloc(sizeof(TreeNode));
+    root->self = curr;
+    root->child = NULL;
+    root->edge = NULL;
+    mst->root = root;
+    mst->cost = 0;
+    mst->size = 1;
     curr->visited = true;
     int i = graph->numVertices;
     while(i > 0){
         // find the cheapest connection from that edge that won't make a cycle 
-        Edge* min = getMinEdge(curr);
+        Edge* min = getMinEdge(root->self);
+        if (min == NULL){
+            printf("No more edges to add to MST");
+            break;
+        }
+
         TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+        node->self = (min->v == root->self ? min->u:min->v);
         // add that edge to the MST
-        node->parent = curr;
-        node->child = (min->v == curr ? min->u:min->v);
-        assert(!node->child->visited);
-        node->child->visited = true; // mark the node visited 
+        node->self = curr;
+        root->child = node;
+        root->edge = min;
+
+        assert(!node->self->visited);
+        node->self->visited = true; // mark the node visited 
         // repeat until all vertices are in the MST
         i--;
-        curr = node->child;
         mst->root = node;
         mst->size++;
         mst->cost += min->weight;
+        root = node;
     }
     assert(mst->size == graph->numVertices);
 
     return *mst;
 } 
 
-
 void printMST(MST mst){
-    // print the MST
-    printf("MST: \n");
     TreeNode* curr = mst.root;
     while(curr != NULL){
-        printf("%d -> %d\n", curr->parent->id, curr->child->id);
+        printf("Vertex: %c)", curr->self->id);
         curr = curr->child;
     }
 }
-
 
 /**
  * @brief main 
