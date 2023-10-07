@@ -6,6 +6,9 @@ This project is a C implementation of Minimum Spanning Trees (MST) using both Pr
 
 A Minimum Spanning Tree (MST) of a graph is a subgraph that includes all the vertices of the original graph and connects them with the minimum possible total edge weight. This project demonstrates two popular algorithms for finding MSTs.
 
+### Implementation
+This projects reads in a graph as a set of weighted connections, such as (A B 10), signifying a direct edge from vertex A to B. It then runs both algorithms on the given graph.
+
 ### Prim's Algorithm
 
 Prim's Algorithm starts with an arbitrary node and grows the MST one vertex at a time. It always selects the edge with the lowest weight that connects a vertex in the MST to a vertex outside it.
