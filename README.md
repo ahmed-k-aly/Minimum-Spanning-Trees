@@ -2,6 +2,9 @@
 
 This project is a C implementation of Minimum Spanning Trees (MST) using both Prim and Kruskal's algorithms. MST is a fundamental problem in graph theory, and this project provides efficient solutions for finding the minimum spanning tree in a given connected, undirected graph.
 
+## Motivation
+I wrote this to gain more insight into the intricacies of both algorithms for my COSC-311 Algorithms course at Amherst College. By manually implementing the algorithms and the required infrastructre to run them, I was able to fundamentally grasp the algorithms more and the problem.
+
 ## Introduction
 
 A Minimum Spanning Tree (MST) of a graph is a subgraph that includes all the vertices of the original graph and connects them with the minimum possible total edge weight. This project demonstrates two popular algorithms for finding MSTs.
